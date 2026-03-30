@@ -7,27 +7,13 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 border-b"
-      style={{
-        backgroundColor: "rgba(10,10,15,0.9)",
-        borderColor: "#1e1e2e",
-        backdropFilter: "blur(12px)",
-      }}
+      className="fixed top-0 left-0 right-0 z-50 border-b bg-white"
+      style={{ borderColor: "#e8ecf4" }}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl font-bold tracking-tight gradient-text">
-            OpenPacks
-          </span>
-          <span
-            className="text-xs px-2 py-0.5 rounded-full font-medium"
-            style={{
-              backgroundColor: "rgba(59,94,235,0.2)",
-              color: "#3b5eeb",
-              border: "1px solid rgba(59,94,235,0.4)",
-            }}
-          >
-            BETA
+          <span className="text-xl font-extrabold tracking-tight" style={{ color: "#0f1b3d" }}>
+            📦 OpenPacks
           </span>
         </Link>
 
@@ -35,21 +21,27 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/#deals"
-            className="text-sm text-gray-400 hover:text-white transition-colors"
+            className="text-sm font-medium transition-colors"
+            style={{ color: "#6b7280" }}
+            onMouseOver={e => (e.currentTarget.style.color = "#0f1b3d")}
+            onMouseOut={e => (e.currentTarget.style.color = "#6b7280")}
           >
             Deals
           </Link>
           <Link
             href="/about"
-            className="text-sm text-gray-400 hover:text-white transition-colors"
+            className="text-sm font-medium transition-colors"
+            style={{ color: "#6b7280" }}
+            onMouseOver={e => (e.currentTarget.style.color = "#0f1b3d")}
+            onMouseOut={e => (e.currentTarget.style.color = "#6b7280")}
           >
             About
           </Link>
           <Link
             href="/#deals"
-            className="text-sm font-semibold px-4 py-2 rounded-lg transition-all"
+            className="text-sm font-semibold px-4 py-2 rounded-lg transition-all min-h-[44px] flex items-center"
             style={{
-              backgroundColor: "#3b5eeb",
+              backgroundColor: "#0f1b3d",
               color: "white",
             }}
           >
@@ -59,7 +51,8 @@ export default function Navbar() {
 
         {/* Mobile menu toggle */}
         <button
-          className="md:hidden text-gray-400 hover:text-white"
+          className="md:hidden"
+          style={{ color: "#6b7280" }}
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
@@ -91,27 +84,29 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div
-          className="md:hidden border-t px-6 py-4 flex flex-col gap-4"
-          style={{ borderColor: "#1e1e2e", backgroundColor: "#0a0a0f" }}
+          className="md:hidden border-t px-6 py-4 flex flex-col gap-4 bg-white"
+          style={{ borderColor: "#e8ecf4" }}
         >
           <Link
             href="/#deals"
-            className="text-sm text-gray-400 hover:text-white"
+            className="text-sm font-medium"
+            style={{ color: "#6b7280" }}
             onClick={() => setOpen(false)}
           >
             Deals
           </Link>
           <Link
             href="/about"
-            className="text-sm text-gray-400 hover:text-white"
+            className="text-sm font-medium"
+            style={{ color: "#6b7280" }}
             onClick={() => setOpen(false)}
           >
             About
           </Link>
           <Link
             href="/#deals"
-            className="text-sm font-semibold px-4 py-2 rounded-lg text-center"
-            style={{ backgroundColor: "#3b5eeb", color: "white" }}
+            className="text-sm font-semibold px-4 py-3 rounded-lg text-center min-h-[44px] flex items-center justify-center"
+            style={{ backgroundColor: "#0f1b3d", color: "white" }}
             onClick={() => setOpen(false)}
           >
             Get In

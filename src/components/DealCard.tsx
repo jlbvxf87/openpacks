@@ -7,13 +7,10 @@ export default function DealCard({ deal }: { deal: Deal }) {
 
   return (
     <div
-      className="card-hover rounded-2xl p-6 flex flex-col gap-4"
+      className="card-hover rounded-2xl p-6 flex flex-col gap-4 bg-white"
       style={{
-        backgroundColor: "#12121a",
-        border: "1px solid #1e1e2e",
-        boxShadow: isOpen
-          ? "0 0 30px rgba(59,94,235,0.08)"
-          : "none",
+        border: "1px solid #e8ecf4",
+        boxShadow: "0 2px 8px rgba(15, 27, 61, 0.04)",
       }}
     >
       {/* Top row */}
@@ -22,20 +19,29 @@ export default function DealCard({ deal }: { deal: Deal }) {
           <span
             className="text-xs px-2 py-0.5 rounded-full font-medium"
             style={{
-              backgroundColor: "rgba(59,94,235,0.15)",
+              backgroundColor: "rgba(59,94,235,0.08)",
               color: "#3b5eeb",
-              border: "1px solid rgba(59,94,235,0.3)",
+              border: "1px solid rgba(59,94,235,0.2)",
             }}
           >
             {deal.category}
           </span>
         </div>
         <span
-          className={`text-xs px-3 py-1 rounded-full font-semibold ${
+          className="text-xs px-3 py-1 rounded-full font-semibold"
+          style={
             isOpen
-              ? "bg-green-900/40 text-green-400 border border-green-800"
-              : "bg-gray-800/60 text-gray-400 border border-gray-700"
-          }`}
+              ? {
+                  backgroundColor: "rgba(22, 163, 74, 0.08)",
+                  color: "#16a34a",
+                  border: "1px solid rgba(22, 163, 74, 0.2)",
+                }
+              : {
+                  backgroundColor: "#f3f4f6",
+                  color: "#6b7280",
+                  border: "1px solid #e5e7eb",
+                }
+          }
         >
           {isOpen ? "● Open" : "Coming Soon"}
         </span>
@@ -43,27 +49,27 @@ export default function DealCard({ deal }: { deal: Deal }) {
 
       {/* Name + tagline */}
       <div>
-        <h3 className="text-xl font-bold text-white">{deal.name}</h3>
-        <p className="text-sm text-gray-400 mt-1 leading-relaxed">
+        <h3 className="text-xl font-bold" style={{ color: "#0f1b3d" }}>{deal.name}</h3>
+        <p className="text-sm mt-1 leading-relaxed" style={{ color: "#6b7280" }}>
           {deal.tagline}
         </p>
       </div>
 
       {/* Progress */}
       <div>
-        <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+        <div className="flex justify-between text-xs mb-1.5" style={{ color: "#6b7280" }}>
           <span>${deal.raised.toLocaleString()} raised</span>
           <span>Goal: ${deal.raise.toLocaleString()}</span>
         </div>
         <div
           className="h-1.5 rounded-full overflow-hidden"
-          style={{ backgroundColor: "#1e1e2e" }}
+          style={{ backgroundColor: "#e8ecf4" }}
         >
           <div
             className="h-full rounded-full transition-all"
             style={{
               width: `${pct}%`,
-              backgroundColor: isOpen ? "#3b5eeb" : "#4b4b6b",
+              backgroundColor: isOpen ? "#0f1b3d" : "#d1d5db",
             }}
           />
         </div>
@@ -76,9 +82,9 @@ export default function DealCard({ deal }: { deal: Deal }) {
             key={tier.name}
             className="text-xs px-2 py-1 rounded-md"
             style={{
-              backgroundColor: "#1e1e2e",
-              color: "#9090aa",
-              border: "1px solid #2a2a3e",
+              backgroundColor: "#f8f9fa",
+              color: "#6b7280",
+              border: "1px solid #e8ecf4",
             }}
           >
             {tier.name} ${tier.price.toLocaleString()}
@@ -89,17 +95,16 @@ export default function DealCard({ deal }: { deal: Deal }) {
       {/* CTA */}
       <Link
         href={`/deal/${deal.slug}`}
-        className="mt-auto block text-center py-3 rounded-xl text-sm font-semibold transition-all"
+        className="mt-auto block text-center py-3 rounded-xl text-sm font-semibold transition-all min-h-[44px] flex items-center justify-center"
         style={
           isOpen
             ? {
-                backgroundColor: "#3b5eeb",
+                backgroundColor: "#0f1b3d",
                 color: "white",
               }
             : {
-                backgroundColor: "#1e1e2e",
-                color: "#6b6b85",
-                cursor: "default",
+                backgroundColor: "#f3f4f6",
+                color: "#9ca3af",
                 pointerEvents: "none",
               }
         }
