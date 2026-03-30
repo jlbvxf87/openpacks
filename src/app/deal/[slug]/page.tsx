@@ -1,15 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { deals, getDeal } from "@/lib/deals";
+import CapitalBreakdown from "@/components/CapitalBreakdown";
+import CountdownTimer from "@/components/CountdownTimer";
+import SocialProofTicker from "@/components/SocialProofTicker";
 
 export async function generateStaticParams() {
   return deals.map((d) => ({ slug: d.slug }));
 }
 
-const PROJECT_COLORS: Record<string, { bg: string; icon: string; faqs: { q: string; a: string }[] }> = {
+const PROJECT_COLORS: Record<string, { bg: string; icon: string; logo?: string; faqs: { q: string; a: string }[] }> = {
   "awa-installs": {
     bg: "linear-gradient(135deg, #0f1b3d 0%, #1e3a6e 100%)",
     icon: "🤖",
+    logo: "/logos/awa.png",
     faqs: [
       {
         q: "What exactly is AWA Installs?",
@@ -28,6 +33,7 @@ const PROJECT_COLORS: Record<string, { bg: string; icon: string; faqs: { q: stri
   "feedr": {
     bg: "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)",
     icon: "🎬",
+    logo: "/logos/feedr.png",
     faqs: [
       {
         q: "What is FEEDR?",
@@ -46,6 +52,7 @@ const PROJECT_COLORS: Record<string, { bg: string; icon: string; faqs: { q: stri
   "clipfit": {
     bg: "linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)",
     icon: "👗",
+    logo: "/logos/clipfit.png",
     faqs: [
       {
         q: "What is ClipFit?",
@@ -92,6 +99,7 @@ export default function DealPage({ params }: { params: { slug: string } }) {
 
   const pct = Math.min((deal.raised / deal.raise) * 100, 100);
   const isOpen = deal.status === "open";
+  const barColor = pct > 80 ? "#ef4444" : isOpen ? "#10b981" : "#d1d5db";
   const colors = PROJECT_COLORS[deal.slug] ?? {
     bg: "linear-gradient(135deg, #374151 0%, #6b7280 100%)",
     icon: "📦",
@@ -106,9 +114,23 @@ export default function DealPage({ params }: { params: { slug: string } }) {
         className="h-48 md:h-64 flex items-center justify-center relative"
         style={{ background: colors.bg }}
       >
-        <div className="text-center">
-          <div className="text-6xl mb-3">{colors.icon}</div>
-          <div className="flex items-center gap-3 justify-center">
+        <div className="text-center flex flex-col items-center gap-3">
+          {/* Logo or icon */}
+          {colors.logo ? (
+            <div className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center bg-white/10 mb-1">
+              <Image
+                src={colors.logo}
+                alt={`${deal.name} logo`}
+                width={72}
+                height={72}
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <div className="text-6xl mb-1">{colors.icon}</div>
+          )}
+
+          <div className="flex items-center gap-3 justify-center flex-wrap">
             <span
               className="text-xs px-3 py-1 rounded-full font-medium"
               style={{
@@ -137,6 +159,9 @@ export default function DealPage({ params }: { params: { slug: string } }) {
             >
               {isOpen ? "● Live Now" : "Coming Soon"}
             </span>
+
+            {/* Countdown timer */}
+            <CountdownTimer status={deal.status} />
           </div>
         </div>
       </div>
@@ -149,6 +174,11 @@ export default function DealPage({ params }: { params: { slug: string } }) {
           <Link href="/#deals" className="hover:underline" style={{ color: "#6b7280" }}>Deals</Link>
           <span>›</span>
           <span style={{ color: "#0f1b3d", fontWeight: 600 }}>{deal.name}</span>
+        </div>
+
+        {/* Social proof ticker */}
+        <div className="mb-8">
+          <SocialProofTicker slug={deal.slug} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -197,14 +227,17 @@ export default function DealPage({ params }: { params: { slug: string } }) {
                   className="h-full rounded-full transition-all"
                   style={{
                     width: `${pct}%`,
-                    backgroundColor: isOpen ? "#10b981" : "#d1d5db",
+                    backgroundColor: barColor,
                   }}
                 />
               </div>
-              <div className="text-sm font-semibold" style={{ color: "#10b981" }}>
+              <div className="text-sm font-semibold" style={{ color: pct > 80 ? "#ef4444" : "#10b981" }}>
                 {pct.toFixed(0)}% funded
               </div>
             </div>
+
+            {/* Capital Breakdown */}
+            <CapitalBreakdown slug={deal.slug} />
 
             {/* What you're backing */}
             <div
@@ -254,6 +287,13 @@ export default function DealPage({ params }: { params: { slug: string } }) {
             {deal.tiers.map((tier) => {
               const spotsLeft = tier.spotsRemaining;
               const soldOut = spotsLeft !== null && spotsLeft === 0;
+              const filledPct = tier.spots !== null && spotsLeft !== null
+                ? ((tier.spots - spotsLeft) / tier.spots) * 100
+                : 0;
+              const tierBarColor = filledPct > 80 ? "#ef4444" : "#3b5eeb";
+
+              const isOperatorLow = tier.name === "Operator" && spotsLeft !== null && spotsLeft <= 2 && spotsLeft > 0;
+              const isBackerLow = tier.name === "Backer" && spotsLeft !== null && spotsLeft <= 5 && spotsLeft > 0;
 
               return (
                 <div
@@ -268,14 +308,35 @@ export default function DealPage({ params }: { params: { slug: string } }) {
                     </span>
                   </div>
                   <p className="text-sm mb-3 leading-relaxed" style={{ color: "#6b7280" }}>{tier.perks}</p>
+
+                  {/* Urgency badges */}
+                  {isOperatorLow && (
+                    <div className="mb-2">
+                      <span
+                        className="text-xs px-2.5 py-1 rounded-full font-semibold"
+                        style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}
+                      >
+                        🔥 Only {spotsLeft} left
+                      </span>
+                    </div>
+                  )}
+                  {isBackerLow && (
+                    <div className="mb-2">
+                      <span
+                        className="text-xs px-2.5 py-1 rounded-full font-semibold"
+                        style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.2)" }}
+                      >
+                        ⚡ Limited spots
+                      </span>
+                    </div>
+                  )}
+
                   {spotsLeft !== null && (
                     <div className="mb-3">
                       <div className="flex justify-between text-xs mb-1" style={{ color: "#6b7280" }}>
                         <span>{soldOut ? "Sold out" : `${spotsLeft} of ${tier.spots} spots left`}</span>
-                        {!soldOut && spotsLeft !== null && tier.spots !== null && (
-                          <span style={{ color: spotsLeft <= 2 ? "#f59e0b" : "#6b7280" }}>
-                            {spotsLeft <= 2 ? "⚡ Almost gone" : ""}
-                          </span>
+                        {!soldOut && spotsLeft !== null && tier.spots !== null && filledPct > 80 && (
+                          <span style={{ color: "#ef4444" }}>Almost gone</span>
                         )}
                       </div>
                       {tier.spots !== null && (
@@ -286,8 +347,8 @@ export default function DealPage({ params }: { params: { slug: string } }) {
                           <div
                             className="h-full rounded-full"
                             style={{
-                              width: `${((tier.spots - (spotsLeft ?? 0)) / tier.spots) * 100}%`,
-                              backgroundColor: "#3b5eeb",
+                              width: `${filledPct}%`,
+                              backgroundColor: tierBarColor,
                             }}
                           />
                         </div>

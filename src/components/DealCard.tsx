@@ -1,18 +1,51 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Deal } from "@/lib/deals";
 
-const PROJECT_COLORS: Record<string, { bg: string; accent: string; icon: string }> = {
-  "awa-installs": { bg: "linear-gradient(135deg, #0f1b3d 0%, #1e3a6e 100%)", accent: "#3b5eeb", icon: "🤖" },
-  "feedr": { bg: "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)", accent: "#a855f7", icon: "🎬" },
-  "clipfit": { bg: "linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)", accent: "#06b6d4", icon: "👗" },
+const PROJECT_COLORS: Record<string, { bg: string; accent: string; icon: string; logo?: string }> = {
+  "awa-installs": { bg: "linear-gradient(135deg, #0f1b3d 0%, #1e3a6e 100%)", accent: "#3b5eeb", icon: "🤖", logo: "/logos/awa.png" },
+  "feedr": { bg: "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)", accent: "#a855f7", icon: "🎬", logo: "/logos/feedr.png" },
+  "clipfit": { bg: "linear-gradient(135deg, #0891b2 0%, #06b6d4 100%)", accent: "#06b6d4", icon: "👗", logo: "/logos/clipfit.png" },
   "chipshot-creator": { bg: "linear-gradient(135deg, #065f46 0%, #10b981 100%)", accent: "#10b981", icon: "⛳" },
 };
+
+function UrgencyBadges({ deal }: { deal: Deal }) {
+  const badges: React.ReactNode[] = [];
+
+  for (const tier of deal.tiers) {
+    if (tier.name === "Operator" && tier.spotsRemaining !== null && tier.spotsRemaining <= 2 && tier.spotsRemaining > 0) {
+      badges.push(
+        <span
+          key="operator-low"
+          className="text-xs px-2.5 py-1 rounded-full font-semibold"
+          style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444", border: "1px solid rgba(239,68,68,0.2)" }}
+        >
+          🔥 Only {tier.spotsRemaining} left
+        </span>
+      );
+    }
+    if (tier.name === "Backer" && tier.spotsRemaining !== null && tier.spotsRemaining <= 5 && tier.spotsRemaining > 0) {
+      badges.push(
+        <span
+          key="backer-low"
+          className="text-xs px-2.5 py-1 rounded-full font-semibold"
+          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.2)" }}
+        >
+          ⚡ Limited spots
+        </span>
+      );
+    }
+  }
+
+  return badges.length > 0 ? <div className="flex gap-2 flex-wrap">{badges}</div> : null;
+}
 
 export default function DealCard({ deal }: { deal: Deal }) {
   const pct = Math.min((deal.raised / deal.raise) * 100, 100);
   const isOpen = deal.status === "open";
   const colors = PROJECT_COLORS[deal.slug] ?? { bg: "linear-gradient(135deg, #374151 0%, #6b7280 100%)", accent: "#6b7280", icon: "📦" };
+  const barColor = pct > 80 ? "#ef4444" : isOpen ? "#10b981" : "#d1d5db";
 
   // Hardcoded backer counts
   const backers = deal.slug === "awa-installs" ? 7 : 0;
@@ -39,7 +72,26 @@ export default function DealCard({ deal }: { deal: Deal }) {
         className="h-24 flex items-center justify-center relative"
         style={{ background: colors.bg }}
       >
-        <span className="text-4xl">{colors.icon}</span>
+        {colors.logo ? (
+          <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center bg-white/10">
+            <Image
+              src={colors.logo}
+              alt={`${deal.name} logo`}
+              width={56}
+              height={56}
+              className="object-contain"
+            />
+          </div>
+        ) : colors.icon === "⛳" ? (
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-extrabold"
+            style={{ backgroundColor: "rgba(255,255,255,0.15)", border: "2px solid rgba(255,255,255,0.25)", color: "white" }}
+          >
+            ⛳
+          </div>
+        ) : (
+          <span className="text-4xl">{colors.icon}</span>
+        )}
         <div className="absolute top-3 right-3">
           <span
             className="text-xs px-2.5 py-1 rounded-full font-semibold"
@@ -83,6 +135,9 @@ export default function DealCard({ deal }: { deal: Deal }) {
           </p>
         </div>
 
+        {/* Urgency badges */}
+        <UrgencyBadges deal={deal} />
+
         {/* Progress bar — GoFundMe style */}
         <div>
           <div className="flex justify-between items-baseline mb-2">
@@ -101,7 +156,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
               className="h-full rounded-full transition-all"
               style={{
                 width: `${pct}%`,
-                backgroundColor: isOpen ? "#10b981" : "#d1d5db",
+                backgroundColor: barColor,
               }}
             />
           </div>
