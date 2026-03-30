@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -12,9 +13,7 @@ export default function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-extrabold tracking-tight" style={{ color: "#0f1b3d" }}>
-            📦 OpenPacks
-          </span>
+          <Image src="/logo.png" alt="OpenPacks" width={140} height={40} className="object-contain" />
         </Link>
 
         {/* Desktop nav */}

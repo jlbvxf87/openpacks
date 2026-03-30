@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: "OpenPacks — Back the builders. Own the upside.",
   description:
     "Deal-by-deal participation in real AI systems being built right now. Back Jaron Baston's AI products and get revenue share.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
   openGraph: {
     title: "OpenPacks — Back the builders. Own the upside.",
     description:
